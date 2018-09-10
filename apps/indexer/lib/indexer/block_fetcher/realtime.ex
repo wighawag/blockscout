@@ -61,6 +61,8 @@ defmodule Indexer.BlockFetcher.Realtime do
       when is_binary(quantity) do
     number = quantity_to_integer(quantity)
 
+    Telemetry.execute([:indexer, :block_fetcher, :realtime, :new_block], number)
+
     # Subscriptions don't support getting all the blocks and transactions data, so we need to go back and get the full block
     case fetch_and_import_range(block_fetcher, number..number) do
       {:ok, {_inserted, _next}} ->

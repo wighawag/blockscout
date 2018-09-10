@@ -19,7 +19,8 @@ defmodule Indexer.PendingTransactionFetcher do
 
   defstruct interval: @default_interval,
             json_rpc_named_arguments: [],
-            task: nil
+            task: nil,
+            timer_reference: nil
 
   @gen_server_options ~w(debug name spawn_opt timeout)a
 
@@ -45,6 +46,31 @@ defmodule Indexer.PendingTransactionFetcher do
     GenServer.start_link(__MODULE__, Keyword.drop(opts, @gen_server_options), Keyword.take(opts, @gen_server_options))
   end
 
+  @doc false
+  def metrics(server \\ __MODULE__) do
+    %__MODULE__{timer_reference: timer_reference, task: task} = :sys.get_state(server)
+
+    countdown =
+      case timer_reference do
+        nil ->
+          0
+
+        _ ->
+          case :erlang.read_timer(timer_reference) do
+            false -> 0
+            time -> time
+          end
+      end
+
+    status =
+      case task do
+        nil -> :waiting
+        _ -> :running
+      end
+
+    %{countdown: countdown, status: status}
+  end
+
   @impl GenServer
   def init(opts) do
     opts =
@@ -65,7 +91,7 @@ defmodule Indexer.PendingTransactionFetcher do
   @impl GenServer
   def handle_info(:fetch, %PendingTransactionFetcher{} = state) do
     task = Task.Supervisor.async_nolink(Indexer.TaskSupervisor, fn -> task(state) end)
-    {:noreply, %PendingTransactionFetcher{state | task: task}}
+    {:noreply, %PendingTransactionFetcher{state | task: task, timer_reference: nil}}
   end
 
   def handle_info({ref, _}, %PendingTransactionFetcher{task: %Task{ref: ref}} = state) do
@@ -84,8 +110,8 @@ defmodule Indexer.PendingTransactionFetcher do
   end
 
   defp schedule_fetch(%PendingTransactionFetcher{interval: interval} = state) do
-    Process.send_after(self(), :fetch, interval)
-    %PendingTransactionFetcher{state | task: nil}
+    timer_reference = Process.send_after(self(), :fetch, interval)
+    %PendingTransactionFetcher{state | task: nil, timer_reference: timer_reference}
   end
 
   defp task(%PendingTransactionFetcher{json_rpc_named_arguments: json_rpc_named_arguments} = _state) do
