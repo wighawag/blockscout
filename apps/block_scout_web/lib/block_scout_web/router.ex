@@ -123,6 +123,13 @@ defmodule BlockScoutWeb.Router do
         only: [:index],
         as: :holder
       )
+
+      resources(
+        "/inventory",
+        Tokens.InventoryController,
+        only: [:index],
+        as: :inventory
+      )
     end
 
     resources(

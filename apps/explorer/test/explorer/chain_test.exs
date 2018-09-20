@@ -2737,14 +2737,15 @@ defmodule Explorer.ChainTest do
           token_id: 11
         )
 
-      second_page = insert(
-        :token_transfer,
-        to_address: build(:address),
-        transaction: transaction,
-        token_contract_address: token_contract_address,
-        token: token,
-        token_id: 29
-      )
+      second_page =
+        insert(
+          :token_transfer,
+          to_address: build(:address),
+          transaction: transaction,
+          token_contract_address: token_contract_address,
+          token: token,
+          token_id: 29
+        )
 
       paging_options = %PagingOptions{key: {first_page.token_id}, page_size: 1}
 
