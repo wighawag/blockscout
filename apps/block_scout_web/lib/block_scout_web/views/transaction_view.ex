@@ -151,4 +151,10 @@ defmodule BlockScoutWeb.TransactionView do
     include_label? = Keyword.get(opts, :include_label, true)
     {fee_type, format_wei_value(Wei.from(fee, :wei), denomination, include_unit_label: include_label?)}
   end
+
+  def tab_status(tab_name, request_path) do
+    if String.match?(request_path, ~r/#{tab_name}/) do
+      "active"
+    end
+  end
 end

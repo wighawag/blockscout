@@ -146,4 +146,20 @@ defmodule BlockScoutWeb.TransactionViewTest do
       assert TransactionView.to_address(transaction) == transaction.to_address
     end
   end
+
+  describe "tab_status/2" do
+    test "returns \"active\" if the tab name is in the path" do
+      tab_name = "token_transfers"
+      request_path = "/tx/0xSom3tH1ng/token_transfers/?additional_params=blah"
+
+      assert TransactionView.tab_status(tab_name, request_path) == "active"
+    end
+
+    test "returns nil if the tab name is not in the path" do
+      tab_name = "internal_transactions"
+      request_path = "/tx/0xSom3tH1ng/token_transfers/?additional_params=blah"
+
+      assert TransactionView.tab_status(tab_name, request_path) == nil
+    end
+  end
 end
