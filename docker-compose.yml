@@ -1,0 +1,26 @@
+version: '3'
+services:
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      #TODO use dev.secret.exs // better yet docker secrets
+      POSTGRES_PASSWORD: sesame
+      POSTGRES_USER: postgres
+      POSTGRES_DB: explorer_dev
+    networks:
+      - internal
+  
+  blockscout:
+    build: ./
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

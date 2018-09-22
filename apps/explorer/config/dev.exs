@@ -4,7 +4,7 @@ use Mix.Config
 config :explorer, Explorer.Repo,
   adapter: Ecto.Adapters.Postgres,
   database: "explorer_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 20,
   pool_timeout: 60_000,
   timeout: 80_000
