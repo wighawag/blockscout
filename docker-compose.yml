@@ -14,10 +14,26 @@ services:
   
   blockscout:
     build: ./
+    environment:
+      ETHEREUM_JSONRPC_HTTP_URL: http://geth:8545
+      ETHEREUM_JSONRPC_WEB_SOCKET_URL: http://geth:8546
+      ETHEREUM_JSONRPC_VARIANT: geth
     ports:
       - "4000:4000"
     depends_on:
       - postgres
+      - geth
+    networks:
+      - internal
+
+  geth:
+    image: ethereum/client-go:v1.8.10
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303"
+      - "30303:30303/udp"
+    command: --rpc --rpcaddr 0.0.0.0 --ws --wsaddr 0.0.0.0 --dev --dev.period 15 --rpcvhosts *
     networks:
       - internal
 
