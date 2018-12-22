@@ -33,7 +33,7 @@ services:
       - "8546:8546"
       - "30303:30303"
       - "30303:30303/udp"
-    command: --rpc --rpcaddr 0.0.0.0 --ws --wsaddr 0.0.0.0 --dev --dev.period 15 --rpcvhosts *
+    command: --rpc --rpcaddr 0.0.0.0 --ws --wsaddr 0.0.0.0 --dev --dev.period 15 --rpcvhosts * --rpccorsdomain "http://localhost:8000"
     networks:
       - internal
 
