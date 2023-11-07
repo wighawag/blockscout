@@ -37,6 +37,11 @@ services:
     extends:
       file: ./services/docker-compose-sig-provider.yml
       service: sig-provider
+  
+  smart-contract-verifier:
+    extends:
+      file: ./services/docker-compose-smart-contract-verifier.yml
+      service: smart-contract-verifier
 
   frontend:
     depends_on:
